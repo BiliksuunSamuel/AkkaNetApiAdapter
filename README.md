@@ -11,12 +11,6 @@
     - [1. Register the Actor System](#1-register-the-actor-system)
     - [2. Create an Actor](#2-create-an-actor)
     - [3. Use the Actor in Your API Project](#3-use-the-actor-in-your-api)
-- [Examples](#examples)
-- [Use Cases](#use-cases)
-- [Documentation](#documentation)
-- [Contributing](#contributing)
-- [License](#license)
-- [Support](#support)
 
 ---
 
