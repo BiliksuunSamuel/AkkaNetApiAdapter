@@ -1,0 +1,12 @@
+/Users/bhills/Desktop/DotnetProjects/AkkaNetApiAdapterSdk/AkkaNetApiAdapter/AkkaNetApiAdapter/bin/Release/net6.0/AkkaNetApiAdapter.deps.json
+/Users/bhills/Desktop/DotnetProjects/AkkaNetApiAdapterSdk/AkkaNetApiAdapter/AkkaNetApiAdapter/bin/Release/net6.0/AkkaNetApiAdapter.dll
+/Users/bhills/Desktop/DotnetProjects/AkkaNetApiAdapterSdk/AkkaNetApiAdapter/AkkaNetApiAdapter/bin/Release/net6.0/AkkaNetApiAdapter.pdb
+/Users/bhills/Desktop/DotnetProjects/AkkaNetApiAdapterSdk/AkkaNetApiAdapter/AkkaNetApiAdapter/obj/Release/net6.0/AkkaNetApiAdapter.csproj.AssemblyReference.cache
+/Users/bhills/Desktop/DotnetProjects/AkkaNetApiAdapterSdk/AkkaNetApiAdapter/AkkaNetApiAdapter/obj/Release/net6.0/AkkaNetApiAdapter.GeneratedMSBuildEditorConfig.editorconfig
+/Users/bhills/Desktop/DotnetProjects/AkkaNetApiAdapterSdk/AkkaNetApiAdapter/AkkaNetApiAdapter/obj/Release/net6.0/AkkaNetApiAdapter.AssemblyInfoInputs.cache
+/Users/bhills/Desktop/DotnetProjects/AkkaNetApiAdapterSdk/AkkaNetApiAdapter/AkkaNetApiAdapter/obj/Release/net6.0/AkkaNetApiAdapter.AssemblyInfo.cs
+/Users/bhills/Desktop/DotnetProjects/AkkaNetApiAdapterSdk/AkkaNetApiAdapter/AkkaNetApiAdapter/obj/Release/net6.0/AkkaNetApiAdapter.csproj.CoreCompileInputs.cache
+/Users/bhills/Desktop/DotnetProjects/AkkaNetApiAdapterSdk/AkkaNetApiAdapter/AkkaNetApiAdapter/obj/Release/net6.0/AkkaNetApiAdapter.dll
+/Users/bhills/Desktop/DotnetProjects/AkkaNetApiAdapterSdk/AkkaNetApiAdapter/AkkaNetApiAdapter/obj/Release/net6.0/refint/AkkaNetApiAdapter.dll
+/Users/bhills/Desktop/DotnetProjects/AkkaNetApiAdapterSdk/AkkaNetApiAdapter/AkkaNetApiAdapter/obj/Release/net6.0/AkkaNetApiAdapter.pdb
+/Users/bhills/Desktop/DotnetProjects/AkkaNetApiAdapterSdk/AkkaNetApiAdapter/AkkaNetApiAdapter/obj/Release/net6.0/ref/AkkaNetApiAdapter.dll
