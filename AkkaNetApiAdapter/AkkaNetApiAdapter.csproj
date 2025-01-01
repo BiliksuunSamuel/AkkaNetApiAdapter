@@ -13,6 +13,8 @@
         <RepositoryType>git</RepositoryType>
         <PackageReleaseNotes>Version 1.0.0 - Initial Release</PackageReleaseNotes>
         <PackageTags>Akka.Net Actor Models Distributed Systems </PackageTags>
+        <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
     </PropertyGroup>
 
     <ItemGroup>
