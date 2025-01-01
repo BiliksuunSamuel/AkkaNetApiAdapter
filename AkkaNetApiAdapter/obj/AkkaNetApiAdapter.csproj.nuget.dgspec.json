@@ -5,7 +5,7 @@
   },
   "projects": {
     "/Users/bhills/Desktop/DotnetProjects/AkkaNetApiAdapterSdk/AkkaNetApiAdapter/AkkaNetApiAdapter/AkkaNetApiAdapter.csproj": {
-      "version": "1.0.0",
+      "version": "1.1.2",
       "restore": {
         "projectUniqueName": "/Users/bhills/Desktop/DotnetProjects/AkkaNetApiAdapterSdk/AkkaNetApiAdapter/AkkaNetApiAdapter/AkkaNetApiAdapter.csproj",
         "projectName": "AkkaNetApiAdapter",

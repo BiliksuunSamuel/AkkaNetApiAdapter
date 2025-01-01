@@ -10,17 +10,24 @@ namespace AkkaNetApiAdapter
 {
     private static ConcurrentDictionary<string, IActorRef> _actorRegistry = new();
     private static SupervisorStrategy _defaultSupervisorStrategy = null!;
-    public static IActorRef NotificationActor { get; set; } = ActorRefs.Nobody;
-
     /// <summary>
     /// For Publishing Events To All Subscribers
     /// </summary>
     public static ActorSystem? ActorSystem;
+    
+    
+    /// <summary>
+    /// Get Actor By Name From the Actor Registry
+    /// </summary>
+    /// <param name="name"></param>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
+    /// <exception cref="ArgumentOutOfRangeException"></exception>
     public static IActorRef GetActor<T>(string name = "") where T : BaseActor
     {
-        _ = name ?? throw new ArgumentNullException(nameof(name));
+        _ = name ?? nameof(T);
 
-        string actorFullName = GetActorFullName<T>(name);
+        string actorFullName = GetActorFullName<T>(name??nameof(T));
 
         if (_actorRegistry.TryGetValue(actorFullName, out var actorInstance))
         {
@@ -31,6 +38,14 @@ namespace AkkaNetApiAdapter
             $"\"{actorFullName}\" not created or registered");
     }
 
+    
+    /// <summary>
+    /// Add Actor To the Actor Registry
+    /// </summary>
+    /// <param name="actorSystem"></param>
+    /// <param name="name"></param>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
     public static bool RegisterActor<T>(ActorSystem actorSystem, string name = "") where T : BaseActor
     {
         string actorFullName = GetActorFullName<T>(name);
@@ -40,6 +55,17 @@ namespace AkkaNetApiAdapter
         return _actorRegistry.TryAdd(actorFullName, actor);
     }
 
+    
+    /// <summary>
+    /// Add Actor With Router To the Actor Registry
+    /// </summary>
+    /// <param name="actorSystem"></param>
+    /// <param name="numberOfInstance"></param>
+    /// <param name="upperBound"></param>
+    /// <param name="name"></param>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
+    /// <exception cref="ArgumentOutOfRangeException"></exception>
     public static bool RegisterActorWithRouter<T>(ActorSystem actorSystem, int numberOfInstance, int upperBound,
         string name = "") where T : BaseActor
     {
@@ -53,6 +79,14 @@ namespace AkkaNetApiAdapter
 
         return _actorRegistry.TryAdd(actorFullName, actor);
     }
+    
+    /// <summary>
+    /// Create New Actor
+    /// </summary>
+    /// <param name="actorSystem"></param>
+    /// <param name="name"></param>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
 
     private static IActorRef CreateNewActor<T>(ActorSystem actorSystem, string name) where T : BaseActor
     {

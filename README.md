@@ -10,7 +10,7 @@
 - [Getting Started](#getting-started)
     - [1. Register the Actor System](#1-register-the-actor-system)
     - [2. Create an Actor](#2-create-an-actor)
-    - [3. Use the Actor in Your API](#3-use-the-actor-in-your-api)
+    - [3. Use the Actor in Your API Project](#3-use-the-actor-in-your-api)
 - [Examples](#examples)
 - [Use Cases](#use-cases)
 - [Documentation](#documentation)
@@ -50,7 +50,8 @@ In your Program.cs or StartUp.cs file, register the AkkaNetApiAdapter within the
     var config = builder.Configuration;
     
     // Register the Actor System
-     services.AddActorSystem(c => config.GetSection(nameof(ActorConfig)).Bind(c));
+    //To add your actors to the actor system, pass them as props to the AddActorSystem method
+     services.AddActorSystem(c => config.GetSection(nameof(ActorConfig)).Bind(c), typeof(MyActor));
     
 }
 ```
@@ -91,13 +92,12 @@ Define an actor class inheriting from BaseActor
  }
  ```
 
-### Create Extension Method For Registering Your Actor Classes in the ActorSystem
+## Use the Actor in Your API Project
 ```csharp
-  public static class ServiceCollectionsExtensions
-    {
-        public static void AddActors(this IServiceCollection services)
-        {
-            TopLevelActors.ActorSystem.RegisterActor<MyActor>(TopLevelActors.ActorSystem.ActorSystem);
-        }
+   public async Task MyMethod(){
+       var myMessage=new {};
+       
+       //Get the Actor by name and send the message
+       TopLevelActors.GetActor<MyActor>(nameof(MyActor)).Tell(myMessage);
     }
 ```

@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>AkkaNetApiAdapter</id>
+    <version>1.1.0</version>
+    <authors>Samuel Biliksuun</authors>
+    <license type="expression">MIT</license>
+    <licenseUrl>https://licenses.nuget.org/MIT</licenseUrl>
+    <description>The AkkaNetApiAdapter is a lightweight and efficient SDK designed to simplify the integration of Akka.NET models and actor systems into .NET API applications. This package bridges the gap between the powerful distributed systems capabilities of Akka.NET and the flexibility of .NET APIs, enabling developers to build scalable, resilient, and distributed solutions with ease.</description>
+    <releaseNotes>Version 1.0.0 - Initial Release</releaseNotes>
+    <tags>Akka.Net Actor Models Distributed Systems</tags>
+    <repository type="git" url="https://github.com/BiliksuunSamuel/AkkaNetApiAdapter" />
+    <dependencies>
+      <group targetFramework="net6.0">
+        <dependency id="Akka" version="1.4.39" exclude="Build,Analyzers" />
+        <dependency id="Akka.DependencyInjection" version="1.4.39" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.Extensions.DependencyInjection.Abstractions" version="7.0.0" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.Extensions.Http" version="7.0.0" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.Extensions.Options" version="7.0.0" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="/Users/bhills/Desktop/DotnetProjects/AkkaNetApiAdapterSdk/AkkaNetApiAdapter/AkkaNetApiAdapter/bin/Release/net6.0/AkkaNetApiAdapter.dll" target="lib/net6.0/AkkaNetApiAdapter.dll" />
+  </files>
+</package>
