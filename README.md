@@ -35,3 +35,69 @@
 Install the NuGet package via the .NET CLI:
 ```bash
 dotnet add package AkkaNetApiAdapter
+```
+
+<hr>
+
+## Getting Started
+In your Program.cs or StartUp.cs file, register the AkkaNetApiAdapter within the service container:
+    
+### 1. Register the Actor System
+```csharp
+  var builder = WebApplication.CreateBuilder(args);
+{
+    var services = builder.Services;
+    var config = builder.Configuration;
+    
+    // Register the Actor System
+     services.AddActorSystem(c => config.GetSection(nameof(ActorConfig)).Bind(c));
+    
+}
+```
+### 2. Create extension method for adding actor system to WebApplicationBuilder
+```csharp
+  pubilc static class WebApplicationExtensions{
+    public static void UseActorSystem(this WebApplication app)
+    {
+        var actorSys = app.Services.GetRequiredService<ActorSystem>();
+
+        _ = actorSys ?? throw new ArgumentNullException(nameof(actorSys));
+    }
+  }
+```
+### 3. Register the Actor System in WebApplicationBuilder
+```csharp
+  var app = builder.Build();
+{
+    // Register the Actor System
+    app.UseActorSystem();
+}
+```
+<hr>
+
+## Create an Actor
+Define an actor class inheriting from BaseActor
+ ```csharp
+ public class MyActor:BaseActor{
+     
+      public MyActor(){
+            ReceiveAsync<ProcessMessage>(DoProcessMessage);
+        }
+     //method to handle messages
+     private async Task DoProcessMessage(ProcessMessage message)
+     {
+         //do something with the message
+     }
+ }
+ ```
+
+### Create Extension Method For Registering Your Actor Classes in the ActorSystem
+```csharp
+  public static class ServiceCollectionsExtensions
+    {
+        public static void AddActors(this IServiceCollection services)
+        {
+            TopLevelActors.ActorSystem.RegisterActor<MyActor>(TopLevelActors.ActorSystem.ActorSystem);
+        }
+    }
+```
