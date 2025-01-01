@@ -9,7 +9,13 @@ namespace AkkaNetApiAdapter.Extensions;
 
 public static class ServicesCollectionsExtension
 {
-    //allow this method to accept actor classes to be registered
+    
+    /// <summary>
+    /// Register Actor System
+    /// </summary>
+    /// <param name="services"></param>
+    /// <param name="configure"></param>
+    /// <returns></returns>
     public static IServiceCollection AddActorSystem(
         this IServiceCollection services,
         Action<ActorConfig> configure)
