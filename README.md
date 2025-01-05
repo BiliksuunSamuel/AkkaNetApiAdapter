@@ -51,7 +51,7 @@ In your Program.cs or StartUp.cs file, register the AkkaNetApiAdapter within the
 ```
 ### 2. Create extension method for adding actor system to WebApplicationBuilder
 ```csharp
-  pubilc static class WebApplicationExtensions{
+  public static class WebApplicationExtensions{
     public static void UseActorSystem(this WebApplication app)
     {
         var actorSys = app.Services.GetRequiredService<ActorSystem>();
