@@ -45,11 +45,13 @@ public static class ServicesCollectionsExtension
         {
             if (!typeof(BaseActor).IsAssignableFrom(actorType)) continue;
 
-            var registerActorMethod = typeof(TopLevelActors)
-                .GetMethod(nameof(TopLevelActors.RegisterActor), BindingFlags.Static | BindingFlags.Public)
-                ?.MakeGenericMethod(actorType);
-
-            registerActorMethod?.Invoke(null, new object[] { actorSystem, actorType.Name });
+            // Call RegisterActor for each actor type dynamically
+            var method = typeof(TopLevelActors)
+                .GetMethod(nameof(TopLevelActors.RegisterActor))!
+                .MakeGenericMethod(actorType); // Dynamically make the method generic
+            // Invoke RegisterActor with the actor system and optionally an actor name
+            method.Invoke(null, new object[] { actorSystem, actorType.Name });
+            
         }
 
         TopLevelActors.ActorSystem = actorSystem;
@@ -60,10 +62,10 @@ public static class ServicesCollectionsExtension
             if (!typeof(BaseActor).IsAssignableFrom(actorType)) continue;
 
             var getActorMethod = typeof(TopLevelActors)
-                .GetMethod(nameof(TopLevelActors.GetActor), BindingFlags.Static | BindingFlags.Public)
-                ?.MakeGenericMethod(actorType);
+                .GetMethod(nameof(TopLevelActors.GetActor))
+                !.MakeGenericMethod(actorType);
 
-            var actorRef = getActorMethod?.Invoke(null, new object[] { "" }); // Pass empty string as default name
+            var actorRef = getActorMethod.Invoke(null, new object[] { actorType.Name}); // Pass empty string as default name
 
             if (actorRef == null)continue;
             // Subscribe the actor to the event stream
