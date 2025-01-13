@@ -45,7 +45,9 @@ In your Program.cs or StartUp.cs file, register the AkkaNetApiAdapter within the
     
     // Register the Actor System
     //To add your actors to the actor system, pass them as props to the AddActorSystem method
-     services.AddActorSystem(c => config.GetSection(nameof(ActorConfig)).Bind(c), typeof(MyActor));
+     services.AddActorSystem(c => builder.Configuration.GetSection(nameof(ActorConfig)).Bind(c),
+      actorTypes: new[] { typeof(CustomerActor) },
+      subscriptions: new[] { (typeof(CustomerActor), typeof(Customer)) });
     
 }
 ```
