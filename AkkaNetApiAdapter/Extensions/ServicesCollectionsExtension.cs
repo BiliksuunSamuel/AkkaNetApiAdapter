@@ -2,6 +2,7 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using Akka.Actor;
 using Akka.DependencyInjection;
+using AkkaNetApiAdapter.HelperMethods;
 using AkkaNetApiAdapter.Options;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -31,6 +32,8 @@ public static class ServicesCollectionsExtension
     var actorSystemName = Regex.Replace(
         Assembly.GetExecutingAssembly().GetName().Name ?? "ActorSystemName",
         @"[^a-zA-Z\s]+", "");
+
+    services.AddScoped<IAkkaActorEventService, AkkaActorEventService>();
 
     services.AddSingleton(sp =>
     {
