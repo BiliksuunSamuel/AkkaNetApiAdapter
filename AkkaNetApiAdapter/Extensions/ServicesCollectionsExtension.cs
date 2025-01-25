@@ -70,9 +70,9 @@ public static class ServicesCollectionsExtension
                         new object[]
                         {
                             actorSystem,
-                            actorType.actorType.Name,
                             actorType.numberOfInstances!,
-                            actorType.upperBound!
+                            actorType.upperBound!,
+                            actorType.actorType.Name,
                         });
                 }
 
