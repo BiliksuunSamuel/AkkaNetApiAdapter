@@ -72,7 +72,9 @@ In your Program.cs or StartUp.cs file, register the AkkaNetApiAdapter within the
 ```
 <hr>
 
-## Create an Actor
+## Use Cases
+
+### Define your actor class
 Define an actor class inheriting from BaseActor
  ```csharp
  public class MyActor:BaseActor{
@@ -88,12 +90,140 @@ Define an actor class inheriting from BaseActor
  }
  ```
 
-## Use the Actor in Your API Project
+### Broadcasting Events
+
+The `BroadcastEventAsync` method allows you to broadcast a message to all subscribers of the event in the actor system. This is useful for scenarios where you need to notify multiple actors about an event.
+
+
 ```csharp
-   public async Task MyMethod(){
-       var myMessage=new {};
-       
-       //Get the Actor by name and send the message
-       TopLevelActors.GetActor<MyActor>(nameof(MyActor)).Tell(myMessage);
+public class MyService
+{
+    private readonly IAkkaActorEventService _eventService;
+
+    public MyService(IAkkaActorEventService eventService)
+    {
+        _eventService = eventService;
     }
+
+    public async Task NotifyAllActorsAsync(MyEvent message)
+    {
+        bool success = await _eventService.BroadcastEventAsync(message);
+        if (success)
+        {
+            // Event broadcasted successfully
+        }
+        else
+        {
+            // Handle the failure
+        }
+    }
+}
+```
+
+### Sending Events to Specific Actors
+The SendEventAsync method allows you to send a message to a specific actor. This is useful for scenarios where you need to communicate directly with a particular actor.
+ ```csharp
+public class MyService
+{
+    private readonly IAkkaActorEventService _eventService;
+
+    public MyService(IAkkaActorEventService eventService)
+    {
+        _eventService = eventService;
+    }
+
+    public async Task SendMessageToActorAsync(MyMessage message)
+    {
+        bool success = await _eventService.SendEventAsync<MyActor, MyMessage>(message);
+        if (success)
+        {
+            // Message sent successfully
+        }
+        else
+        {
+            // Handle the failure
+        }
+    }
+}
+```
+
+### Getting a Response from an Actor
+
+The `ActorAskAsync` method allows you to send a message to a specific actor and get a response. This is useful for scenarios where you need to query an actor for some information.
+
+```csharp
+public class MyService
+{
+    private readonly IAkkaActorEventService _eventService;
+
+    public MyService(IAkkaActorEventService eventService)
+    {
+        _eventService = eventService;
+    }
+
+    public async Task<MyResponse?> QueryActorAsync(MyQuery message)
+    {
+        var response = await _eventService.ActorAskAsync<MyActor, MyQuery, MyResponse>(message);
+        if (response != null)
+        {
+            // Process the response
+        }
+        else
+        {
+            // Handle the failure
+        }
+        return response;
+    }
+}
+```
+
+
+### Mocking and Testing
+The abstraction provided by IAkkaActorEventService makes it easy to mock and test your business logic. By injecting this service into your classes, you can easily replace it with a mock implementation during unit testing, allowing you to verify that your business logic interacts with the actor system as expected without needing to spin up actual actors.
+
+```csharp
+
+public class MyServiceTests
+{
+    [Fact]
+    public async Task SendMessageToActorAsync_ShouldSendMessage()
+    {
+        // Arrange
+        var mockEventService = new Mock<IAkkaActorEventService>();
+        mockEventService
+            .Setup(service => service.SendEventAsync<MyActor, MyMessage>(It.IsAny<MyMessage>()))
+            .ReturnsAsync(true);
+
+        var service = new MyService(mockEventService.Object);
+        var message = new MyMessage();
+
+        // Act
+        var result = await service.SendMessageToActorAsync(message);
+
+        // Assert
+        Assert.True(result);
+        mockEventService.Verify(service => service.SendEventAsync<MyActor, MyMessage>(message), Times.Once);
+    }
+    
+    [Fact]
+    public async Task QueryActorAsync_ShouldReturnResponse()
+    {
+        // Arrange
+        var mockEventService = new Mock<IAkkaActorEventService>();
+        var expectedResponse = new MyResponse();
+        mockEventService
+            .Setup(service => service.ActorAskAsync<MyActor, MyQuery, MyResponse>(It.IsAny<MyQuery>()))
+            .ReturnsAsync(expectedResponse);
+
+        var service = new MyService(mockEventService.Object);
+        var query = new MyQuery();
+
+        // Act
+        var result = await service.QueryActorAsync(query);
+
+        // Assert
+        Assert.Equal(expectedResponse, result);
+        mockEventService.Verify(service => service.ActorAskAsync<MyActor, MyQuery, MyResponse>(query), Times.Once);
+    }
+}
 ```

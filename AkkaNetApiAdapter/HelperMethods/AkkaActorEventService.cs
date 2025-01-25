@@ -41,6 +41,13 @@ public class AkkaActorEventService:IAkkaActorEventService
         }
     }
 
+    /// <summary>
+    /// Send event to a specific actor
+    /// </summary>
+    /// <param name="message"></param>
+    /// <typeparam name="TP"></typeparam>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
     public async Task<bool> SendEventAsync<TP, T>(T message) where TP : BaseActor
     {
         try
@@ -58,6 +65,35 @@ public class AkkaActorEventService:IAkkaActorEventService
             _logger.LogError(e, "Error sending event: {Event} to actor: {ActorName}",
                 JsonConvert.SerializeObject(message, Formatting.Indented), typeof(TP).Name);
             return false;
+        }
+    }
+    
+    
+    /// <summary>
+    /// Get response from an actor after sending an event
+    /// </summary>
+    /// <param name="message"></param>
+    /// <typeparam name="TP"></typeparam>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="TTp"></typeparam>
+    /// <returns></returns>
+    public async Task<TTp?> ActorAskAsync<TP,T,TTp>(T message) where TP : BaseActor
+    {
+        try
+        {
+            await Task.CompletedTask;
+            var actorName = typeof(TP).Name;
+            _logger.LogDebug("Sending event: {event} to actor: {actorName}",
+                JsonConvert.SerializeObject(message, Formatting.Indented), actorName);
+            var actor = TopLevelActors.GetActor<TP>(actorName);
+            var result = await actor.Ask<TTp>(message);
+            return result;
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Error sending event: {Event} to actor: {ActorName}",
+                JsonConvert.SerializeObject(message, Formatting.Indented), typeof(TP).Name);
+            return default;
         }
     }
 }
