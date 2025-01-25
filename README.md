@@ -50,7 +50,7 @@ In your Program.cs or StartUp.cs file, register the AkkaNetApiAdapter within the
     //To add your actors to the actor system, pass them as props to the AddActorSystem method
     // You can provide the number of instances and upper bound for your actor if you want to register the actor with routers.
      services.AddActorSystem(c => builder.Configuration.GetSection(nameof(ActorConfig)).Bind(c),
-      actorTypes: new[] { (typeof(CustomerActor)),(typeof(OrderActor),3,6) },
+      actorTypes: new[] { (typeof(CustomerActor)),(typeof(OrderActor),new ActorResizer{UpperBound=6,NumberOfInstances=3}) },
       subscriptions: new[] { (typeof(CustomerActor), typeof(Customer)) });
      
      /*
@@ -94,9 +94,22 @@ OR
     var host = Host.CreateDefaultBuilder(args)
         .ConfigureServices((hostContext, services) =>
         {
-            services.AddActorSystem(c => hostContext.Configuration.GetSection(nameof(ActorConfig)).Bind(c),
-                actorTypes: new[] { typeof(CustomerActor) },
-                subscriptions: new[] { (typeof(CustomerActor), typeof(Customer)) });
+           services.AddActorSystem(c => builder.Configuration.GetSection(nameof(ActorConfig)).Bind(c),
+                    actorTypes: new[] { (typeof(CustomerActor)),(typeof(OrderActor),new ActorResizer{UpperBound=6,NumberOfInstances=3}) },
+                    subscriptions: new[] { (typeof(CustomerActor), typeof(Customer)) });
+           
+           
+           /*
+             For the OrderActor, we have specified the number of instances as 3 and the upper bound as 6.
+             This means that the actor system will create 3 instances of the OrderActor and will not exceed 6 instances.
+             
+             The upper parameter in the DefaultResizer class represents
+             the maximum number of routees (actor instances) that can be created.
+             This value sets an upper limit on the number of actors that can be spawned to handle the workload.
+             The resizer will not create more than this number of routees,
+             even if the system is under high load
+           */
+     
         })
         .Build();
     

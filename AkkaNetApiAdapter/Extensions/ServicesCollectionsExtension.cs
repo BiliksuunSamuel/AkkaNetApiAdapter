@@ -22,7 +22,7 @@ public static class ServicesCollectionsExtension
    public static IServiceCollection AddActorSystem(
     this IServiceCollection services,
     Action<ActorConfig> configure,
-    (Type actorType,int?numberOfInstances,int?upperBound)[] actorTypes,
+    (Type actorType,ActorResizer? resizer)[] actorTypes,
     params (Type ActorType, Type MessageType)[] subscriptions)
 {
     services.Configure(configure);
@@ -48,7 +48,7 @@ public static class ServicesCollectionsExtension
         {
             if (!typeof(BaseActor).IsAssignableFrom(actorType.actorType)) continue;
 
-            var registerWithRouter = actorType.numberOfInstances.HasValue && actorType.upperBound.HasValue;
+            var registerWithRouter = actorType.resizer != null;
 
             // Call RegisterActor for each actor type dynamically
             var method = registerWithRouter
@@ -63,7 +63,12 @@ public static class ServicesCollectionsExtension
             else
                 method.Invoke(null,
                     new object[]
-                        { actorSystem, actorType.actorType.Name, actorType.numberOfInstances!, actorType.upperBound! });
+                    {
+                        actorSystem,
+                        actorType.actorType.Name,
+                        actorType.resizer!.NumberOfInstances,
+                        actorType.resizer.UpperBound
+                    });
 
         }
 
