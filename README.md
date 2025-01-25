@@ -24,6 +24,9 @@
 
 ---
 
+## Requirements
+.NET 6.0 or .NET 8.0
+
 ## Installation
 
 Install the NuGet package via the .NET CLI:
