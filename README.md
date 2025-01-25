@@ -70,6 +70,35 @@ In your Program.cs or StartUp.cs file, register the AkkaNetApiAdapter within the
     app.UseActorSystem();
 }
 ```
+
+OR 
+
+### Using the actor system in your .Net Service Project, Eg. ***`Worker`*** `service`
+```csharp
+ 
+    var host = Host.CreateDefaultBuilder(args)
+        .ConfigureServices((hostContext, services) =>
+        {
+            services.AddActorSystem(c => hostContext.Configuration.GetSection(nameof(ActorConfig)).Bind(c),
+                actorTypes: new[] { typeof(CustomerActor) },
+                subscriptions: new[] { (typeof(CustomerActor), typeof(Customer)) });
+        })
+        .Build();
+    
+    ResolveActorSystem(host);
+    
+    await host.RunAsync();
+return;
+ 
+static IHost ResolveActorSystem(IHost host)
+{
+    var actorSystem = host.Services.GetRequiredService<ActorSystem>();
+    _ = actorSystem ?? throw new ArgumentNullException(nameof(actorSystem));
+    return host;
+}
+
+
+```
 <hr>
 
 ## Use Cases
