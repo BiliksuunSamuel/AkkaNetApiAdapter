@@ -10,7 +10,8 @@ namespace AkkaNetApiAdapter.Extensions;
 
 public static class ServicesCollectionsExtension
 {
-  
+
+    
     /// <summary>
     /// Register Actor System
     /// </summary>
@@ -19,83 +20,89 @@ public static class ServicesCollectionsExtension
     /// <param name="actorTypes"></param>
     /// <param name="subscriptions"></param>
     /// <returns></returns>
-   public static IServiceCollection AddActorSystem(
-    this IServiceCollection services,
-    Action<ActorConfig> configure,
-    (Type actorType,ActorResizer? resizer)[] actorTypes,
-    params (Type ActorType, Type MessageType)[] subscriptions)
-{
-    services.Configure(configure);
-    var actorConfig = new ActorConfig();
-    configure.Invoke(actorConfig);
-
-    var actorSystemName = Regex.Replace(
-        Assembly.GetExecutingAssembly().GetName().Name ?? "ActorSystemName",
-        @"[^a-zA-Z\s]+", "");
-
-    services.AddScoped<IAkkaActorEventService, AkkaActorEventService>();
-
-    services.AddSingleton(sp =>
+    public static IServiceCollection AddActorSystem(
+        this IServiceCollection services,
+        Action<ActorConfig> configure,
+         (Type actorType, int? numberOfInstances,int?upperBound)[] actorTypes,
+         (Type ActorType, Type MessageType)[] subscriptions)
     {
-        var actorSystemSetup = BootstrapSetup
-            .Create()
-            .And(DependencyResolverSetup.Create(sp));
+        services.Configure(configure);
+        var actorConfig = new ActorConfig();
+        configure.Invoke(actorConfig);
 
-        var actorSystem = ActorSystem.Create(actorSystemName, actorSystemSetup);
+        var actorSystemName = Regex.Replace(
+            Assembly.GetExecutingAssembly().GetName().Name ?? "ActorSystemName",
+            @"[^a-zA-Z\s]+", "");
 
-        // Register the actors dynamically
-        foreach (var actorType in actorTypes)
+        services.AddScoped<IAkkaActorEventService, AkkaActorEventService>();
+
+        services.AddSingleton(sp =>
         {
-            if (!typeof(BaseActor).IsAssignableFrom(actorType.actorType)) continue;
+            var actorSystemSetup = BootstrapSetup
+                .Create()
+                .And(DependencyResolverSetup.Create(sp));
 
-            var registerWithRouter = actorType.resizer != null;
+            var actorSystem = ActorSystem.Create(actorSystemName, actorSystemSetup);
 
-            // Call RegisterActor for each actor type dynamically
-            var method = registerWithRouter
-                ? typeof(TopLevelActors)
-                    .GetMethod(nameof(TopLevelActors.RegisterActorWithRouter))!
-                    .MakeGenericMethod(actorType.actorType)
-                : typeof(TopLevelActors)
-                    .GetMethod(nameof(TopLevelActors.RegisterActor))!
-                    .MakeGenericMethod(actorType.actorType); // Dynamically make the method generic
-            // Invoke RegisterActor with the actor system and optionally an actor name
-            if (!registerWithRouter) method.Invoke(null, new object[] { actorSystem, actorType.actorType.Name });
-            else
-                method.Invoke(null,
-                    new object[]
-                    {
-                        actorSystem,
-                        actorType.actorType.Name,
-                        actorType.resizer!.NumberOfInstances,
-                        actorType.resizer.UpperBound
-                    });
+            // Register the actors dynamically
+            foreach (var actorType in actorTypes)
+            {
+                if (!typeof(BaseActor).IsAssignableFrom(actorType.actorType)) continue;
 
-        }
+                var registerWithRouter = actorType.numberOfInstances.HasValue && actorType.upperBound.HasValue;
 
-        TopLevelActors.ActorSystem = actorSystem;
+                // Call RegisterActor for each actor type dynamically
+                var method = registerWithRouter
+                    ? typeof(TopLevelActors)
+                        .GetMethod(nameof(TopLevelActors.RegisterActorWithRouter))!
+                        .MakeGenericMethod(actorType.actorType)
+                    : typeof(TopLevelActors)
+                        .GetMethod(nameof(TopLevelActors.RegisterActor))!
+                        .MakeGenericMethod(actorType.actorType); // Dynamically make the method generic
+                // Invoke RegisterActor with the actor system and optionally an actor name
+                if (!registerWithRouter)
+                {
+                    method.Invoke(null, new object[] { actorSystem, actorType.actorType.Name });
+                }
+                else
+                {
+                    method.Invoke(null,
+                        new object[]
+                        {
+                            actorSystem,
+                            actorType.actorType.Name,
+                            actorType.numberOfInstances!,
+                            actorType.upperBound!
+                        });
+                }
 
-        // Subscribe to the event stream
-        foreach (var (actorType, messageType) in subscriptions)
-        {
-            if (!typeof(BaseActor).IsAssignableFrom(actorType)) continue;
+            }
 
-            var getActorMethod = typeof(TopLevelActors)
-                .GetMethod(nameof(TopLevelActors.GetActor))
-                !.MakeGenericMethod(actorType);
+            TopLevelActors.ActorSystem = actorSystem;
 
-            var actorRef = getActorMethod.Invoke(null, new object[] { actorType.Name}); // Pass empty string as default name
+            // Subscribe to the event stream
+            foreach (var (actorType, messageType) in subscriptions)
+            {
+                if (!typeof(BaseActor).IsAssignableFrom(actorType)) continue;
 
-            if (actorRef == null)continue;
-            // Subscribe the actor to the event stream
-            actorSystem.EventStream.Subscribe((IActorRef)actorRef, messageType);
-        }
+                var getActorMethod = typeof(TopLevelActors)
+                    .GetMethod(nameof(TopLevelActors.GetActor))
+                    !.MakeGenericMethod(actorType);
 
-        return actorSystem;
-    });
+                var actorRef =
+                    getActorMethod.Invoke(null, new object[] { actorType.Name }); // Pass empty string as default name
 
-    return services;
-}
-    
-    
+                if (actorRef == null) continue;
+                // Subscribe the actor to the event stream
+                actorSystem.EventStream.Subscribe((IActorRef)actorRef, messageType);
+            }
+
+            return actorSystem;
+        });
+
+        return services;
+    }
+
+
 }
 

@@ -50,7 +50,7 @@ In your Program.cs or StartUp.cs file, register the AkkaNetApiAdapter within the
     //To add your actors to the actor system, pass them as props to the AddActorSystem method
     // You can provide the number of instances and upper bound for your actor if you want to register the actor with routers.
      services.AddActorSystem(c => builder.Configuration.GetSection(nameof(ActorConfig)).Bind(c),
-      actorTypes: new[] { (typeof(CustomerActor)),(typeof(OrderActor),new ActorResizer{UpperBound=6,NumberOfInstances=3}) },
+      actorTypes: new[] { (typeof(CustomerActor),null,null),(typeof(OrderActor),3,6) },
       subscriptions: new[] { (typeof(CustomerActor), typeof(Customer)) });
      
      /*
@@ -95,7 +95,7 @@ OR
         .ConfigureServices((hostContext, services) =>
         {
            services.AddActorSystem(c => builder.Configuration.GetSection(nameof(ActorConfig)).Bind(c),
-                    actorTypes: new[] { (typeof(CustomerActor)),(typeof(OrderActor),new ActorResizer{UpperBound=6,NumberOfInstances=3}) },
+                    actorTypes: new[] { (typeof(CustomerActor),null,null),(typeof(OrderActor),3,6) },
                     subscriptions: new[] { (typeof(CustomerActor), typeof(Customer)) });
            
            
