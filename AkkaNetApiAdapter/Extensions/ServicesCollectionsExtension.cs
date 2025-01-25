@@ -22,7 +22,7 @@ public static class ServicesCollectionsExtension
    public static IServiceCollection AddActorSystem(
     this IServiceCollection services,
     Action<ActorConfig> configure,
-    Type[] actorTypes,
+    (Type actorType,int?numberOfInstances,int?upperBound)[] actorTypes,
     params (Type ActorType, Type MessageType)[] subscriptions)
 {
     services.Configure(configure);
@@ -46,15 +46,25 @@ public static class ServicesCollectionsExtension
         // Register the actors dynamically
         foreach (var actorType in actorTypes)
         {
-            if (!typeof(BaseActor).IsAssignableFrom(actorType)) continue;
+            if (!typeof(BaseActor).IsAssignableFrom(actorType.actorType)) continue;
+
+            var registerWithRouter = actorType.numberOfInstances.HasValue && actorType.upperBound.HasValue;
 
             // Call RegisterActor for each actor type dynamically
-            var method = typeof(TopLevelActors)
-                .GetMethod(nameof(TopLevelActors.RegisterActor))!
-                .MakeGenericMethod(actorType); // Dynamically make the method generic
+            var method = registerWithRouter
+                ? typeof(TopLevelActors)
+                    .GetMethod(nameof(TopLevelActors.RegisterActorWithRouter))!
+                    .MakeGenericMethod(actorType.actorType)
+                : typeof(TopLevelActors)
+                    .GetMethod(nameof(TopLevelActors.RegisterActor))!
+                    .MakeGenericMethod(actorType.actorType); // Dynamically make the method generic
             // Invoke RegisterActor with the actor system and optionally an actor name
-            method.Invoke(null, new object[] { actorSystem, actorType.Name });
-            
+            if (!registerWithRouter) method.Invoke(null, new object[] { actorSystem, actorType.actorType.Name });
+            else
+                method.Invoke(null,
+                    new object[]
+                        { actorSystem, actorType.actorType.Name, actorType.numberOfInstances!, actorType.upperBound! });
+
         }
 
         TopLevelActors.ActorSystem = actorSystem;
